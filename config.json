@@ -1,0 +1,5 @@
+{
+    "port": 8800,
+    "appName": "transasction-service",
+    "appEnv": "local"
+}
