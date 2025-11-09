@@ -51,6 +51,9 @@ This project follows a **modular and layered architecture** for clarity, scalabi
 | **Repository** | `/repositories` | Handles data storage and retrieval. Abstracted through an interface for easier testing and mock usage. |
 | **Model** | `/models` | Defines data structures used across layers (e.g., `Transaction`). |
 | **Response** | `/response` | Standardizes HTTP responses for consistent API output. |
+| **Common** | `/common` | Consists function for wrapping error, creating response, and binding a json |
+| **Config** | `/config` | Reads data from config.json |
+| **Routes** | `/route` | a list of endpoints which calls the function from controller |
 
 This separation allows clear responsibility between layers and makes it easier to maintain or test each component independently.
 
@@ -59,20 +62,20 @@ This separation allows clear responsibility between layers and makes it easier t
 ### 2. Design Principles
 
 - **Dependency Injection**  
-  Each service receives its repository through an interface (e.g., `IRepositoryRegistry`), allowing flexible swapping of implementations and easy mocking during unit tests.
+  Each service receives its repository through an interface (e.g., `IRepositoryRegistry`). It allows flexible swapping of implementations and easy mocking during unit tests.
 
 - **Error Handling**  
   The service layer validates CSV format and data consistency before saving to the repository.  
-  Errors (like missing fields or invalid formats) are wrapped with clear messages for debugging.
+  Errors (like missing fields, wrong extension, invalid column) are wrapped with clear messages for debugging. Error handling also added in Controller (in case there's a problem when uploading the csv).
 
 - **Testability**  
   Unit tests mock the repository layer using `testify/mock` to verify service logic without needing a real database.
 
 - **Extensibility**  
-  New features (e.g., analytics or additional endpoints like `/issues`) can be added by extending the service and controller layers without breaking existing functionality.
+  New features (e.g., analytics or additional endpoints like `/issues`, adding notes/notification if there's a invalid format in cs) can be added by extending the service and controller layers without breaking existing functionality.
 
 - **Framework Choice: Gin**  
-  Gin is lightweight and high-performance, ideal for simple REST APIs.  
+  Based on tutorial i learnt and internet, Gin is lightweight and high-performance, ideal for simple REST APIs.  
   It provides easy routing, middleware handling, and JSON response support.
 
 ---
@@ -81,5 +84,5 @@ This separation allows clear responsibility between layers and makes it easier t
 
 1. **Controller** receives a request to `/upload` with a CSV file.  
 2. **Service** parses the CSV, validates data, and converts it into transaction objects.  
-3. **Repository** stores the data (mocked or real DB).  
+3. **Repository** stores the data (mocked or memory).  
 4. **Response** returns success or error JSON to the client.
