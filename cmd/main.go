@@ -11,6 +11,9 @@ import (
 	"go-transaction-service/routes"
 	"go-transaction-service/services"
 	"net/http"
+	"time"
+
+	"github.com/gin-contrib/cors"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
@@ -27,6 +30,16 @@ var command = &cobra.Command{
 
 		router := gin.Default()
 		router.Use(middlewares.HandlePanic())
+
+		// 🧩 Add this CORS middleware
+		router.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{"http://localhost:3000"}, // adjust to your FE port
+			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+		}))
 
 		// NoRoute handler
 		router.NoRoute(func(c *gin.Context) {
