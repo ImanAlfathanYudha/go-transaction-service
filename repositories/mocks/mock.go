@@ -22,3 +22,8 @@ func (m *TransactionRepositoryMock) GetAllTransactions(ctx context.Context) ([]m
 	args := m.Called(ctx)
 	return args.Get(0).([]model.Transaction), args.Error(1)
 }
+
+func (m *TransactionRepositoryMock) EditTransactionStatus(ctx context.Context, timeStamp int64, status string) error {
+	args := m.Called(ctx)
+	return args.Error(1)
+}

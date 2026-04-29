@@ -20,6 +20,7 @@ type ITransactionController interface {
 	UploadTransactionCSV(ctx *gin.Context)
 	GetAllBalance(ctx *gin.Context)
 	GetAllIssues(ctx *gin.Context)
+	EditTransactionStatus(ctx *gin.Context)
 }
 
 func NewTransactionController(service services.IServiceRegistry) ITransactionController {
@@ -153,6 +154,29 @@ func (t *TransactionController) UploadTransactionCSV(ctx *gin.Context) {
 		Message: &successMessage,
 		Gin:     ctx,
 		Notes:   &errorNotes,
+	})
+}
+
+func (t *TransactionController) EditTransactionStatus(ctx *gin.Context) {
+	timeStampParam := ctx.Param("timestamp")
+	status := ctx.Param("status")
+
+	err := t.service.GetTransaction().EditTransactionStatus(ctx.Request.Context(), timeStampParam, status)
+	if err != nil {
+		errorMessage := fmt.Sprintf("%v", err)
+		response.HttpResponse(response.ParamHTTPResp{
+			Code:    http.StatusBadRequest,
+			Message: &errorMessage,
+			Err:     err,
+			Gin:     ctx,
+		})
+		return
+	}
+	successMessage := fmt.Sprintf("Transaction status with timestamp %s updated successfully", timeStampParam)
+	response.HttpResponse(response.ParamHTTPResp{
+		Code:    http.StatusOK,
+		Message: &successMessage,
+		Gin:     ctx,
 	})
 }
 

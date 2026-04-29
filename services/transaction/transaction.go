@@ -9,6 +9,7 @@ import (
 	"go-transaction-service/domain/model"
 	repositories "go-transaction-service/repositories"
 	"io"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -17,6 +18,7 @@ type ITransactionService interface {
 	UploadTransactionCSV(context.Context, io.Reader) (error, []string)
 	GetAllBalance(ctx context.Context) ([]model.Transaction, float64, error)
 	GetAllIssues(ctx context.Context) ([]model.Transaction, error)
+	EditTransactionStatus(ctx context.Context, timeStamp string, status string) error
 }
 
 type TransactionService struct {
@@ -61,6 +63,26 @@ func (t *TransactionService) GetAllIssues(ctx context.Context) ([]model.Transact
 		}
 	}
 	return problemTxns, nil
+}
+
+func (t *TransactionService) EditTransactionStatus(ctx context.Context, timeStamp string, status string) error {
+	if timeStamp == "" {
+		return fmt.Errorf("timestamp is empty")
+	}
+
+	timeStampInteger, err := strconv.ParseInt(timeStamp, 10, 64)
+	if err != nil {
+		return fmt.Errorf("timestamp is invalid")
+	}
+
+	validStatuses := []string{"SUCCESS", "FAILED", "PENDING"}
+	normalizedStatus := strings.ToUpper(status)
+
+	if !slices.Contains(validStatuses, normalizedStatus) {
+		return fmt.Errorf("status %s is invalid", status)
+	}
+
+	return t.respository.GetTransaction().EditTransactionStatus(ctx, timeStampInteger, normalizedStatus)
 }
 
 func (t *TransactionService) UploadTransactionCSV(ctx context.Context, reader io.Reader) (error, []string) {

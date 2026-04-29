@@ -6,11 +6,13 @@ import (
 	errWrap "go-transaction-service/common/error"
 	errConstant "go-transaction-service/constants/error"
 	"go-transaction-service/domain/model"
+	"strings"
 )
 
 type ITransactionRepository interface {
 	SaveTransactions(ctx context.Context, txns []model.Transaction) []model.Transaction
 	GetAllTransactions(ctx context.Context) ([]model.Transaction, error)
+	EditTransactionStatus(ctx context.Context, timeStamp int64, status string) error
 }
 
 type TransactionRepository struct {
@@ -24,6 +26,17 @@ func NewTransactionRepository() ITransactionRepository {
 func (t *TransactionRepository) SaveTransactions(ctx context.Context, txns []model.Transaction) []model.Transaction {
 	t.data = append(t.data, txns...)
 	return t.data
+}
+
+func (t *TransactionRepository) EditTransactionStatus(ctx context.Context, timeStamp int64, status string) error {
+	for i := range t.data {
+		if t.data[i].Timestamp == timeStamp {
+			t.data[i].Status = strings.ToUpper(status)
+			return nil
+		}
+	}
+
+	return fmt.Errorf("transaction with timestamp %d not found", timeStamp)
 }
 
 func (t *TransactionRepository) GetAllTransactions(ctx context.Context) ([]model.Transaction, error) {

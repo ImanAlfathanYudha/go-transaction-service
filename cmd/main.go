@@ -33,7 +33,7 @@ var command = &cobra.Command{
 
 		// 🧩 Add this CORS middleware
 		router.Use(cors.New(cors.Config{
-			AllowOrigins:     []string{"http://localhost:3000"}, // adjust to your FE port
+			AllowOrigins:     []string{ "http://localhost:3000","http://localhost:4200",}, // adjust to your FE port
 			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 			ExposeHeaders:    []string{"Content-Length"},
