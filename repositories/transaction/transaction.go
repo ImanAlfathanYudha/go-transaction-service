@@ -35,7 +35,6 @@ func (t *TransactionRepository) EditTransactionStatus(ctx context.Context, timeS
 			return nil
 		}
 	}
-
 	return fmt.Errorf("transaction with timestamp %d not found", timeStamp)
 }
 

@@ -69,7 +69,6 @@ func (t *TransactionService) EditTransactionStatus(ctx context.Context, timeStam
 	if timeStamp == "" {
 		return fmt.Errorf("timestamp is empty")
 	}
-
 	timeStampInteger, err := strconv.ParseInt(timeStamp, 10, 64)
 	if err != nil {
 		return fmt.Errorf("timestamp is invalid")

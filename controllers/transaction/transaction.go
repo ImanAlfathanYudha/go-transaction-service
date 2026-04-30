@@ -160,7 +160,6 @@ func (t *TransactionController) UploadTransactionCSV(ctx *gin.Context) {
 func (t *TransactionController) EditTransactionStatus(ctx *gin.Context) {
 	timeStampParam := ctx.Param("timestamp")
 	status := ctx.Param("status")
-
 	err := t.service.GetTransaction().EditTransactionStatus(ctx.Request.Context(), timeStampParam, status)
 	if err != nil {
 		errorMessage := fmt.Sprintf("%v", err)
