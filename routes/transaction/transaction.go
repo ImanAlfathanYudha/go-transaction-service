@@ -24,5 +24,6 @@ func (u *TransactionRoute) Run() {
 	group.POST("/upload", u.controller.GetTransaction().UploadTransactionCSV)
 	group.GET("/balance", u.controller.GetTransaction().GetAllBalance)
 	group.GET("/issues", u.controller.GetTransaction().GetAllIssues)
+	group.GET("/detail/:timestamp", u.controller.GetTransaction().GetTransactionByID)
 	group.PUT("/edit/:timestamp/:status", u.controller.GetTransaction().EditTransactionStatus)
 }

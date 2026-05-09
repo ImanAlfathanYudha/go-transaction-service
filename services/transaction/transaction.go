@@ -19,6 +19,7 @@ type ITransactionService interface {
 	GetAllBalance(ctx context.Context) ([]model.Transaction, float64, error)
 	GetAllIssues(ctx context.Context) ([]model.Transaction, error)
 	EditTransactionStatus(ctx context.Context, timeStamp string, status string) error
+	GetTransactionByID(ctx context.Context, timeStamp string) (model.Transaction, error)
 }
 
 type TransactionService struct {
@@ -82,6 +83,18 @@ func (t *TransactionService) EditTransactionStatus(ctx context.Context, timeStam
 	}
 
 	return t.respository.GetTransaction().EditTransactionStatus(ctx, timeStampInteger, normalizedStatus)
+}
+
+func (t *TransactionService) GetTransactionByID(ctx context.Context, timeStamp string) (model.Transaction, error) {
+	if timeStamp == "" {
+		return model.Transaction{}, fmt.Errorf("timestamp is empty")
+	}
+	timeStampInteger, err := strconv.ParseInt(timeStamp, 10, 64)
+	if err != nil {
+		return model.Transaction{}, fmt.Errorf("timestamp is invalid")
+	}
+
+	return t.respository.GetTransaction().GetTransactionByID(ctx, timeStampInteger)
 }
 
 func (t *TransactionService) UploadTransactionCSV(ctx context.Context, reader io.Reader) (error, []string) {

@@ -13,6 +13,7 @@ type ITransactionRepository interface {
 	SaveTransactions(ctx context.Context, txns []model.Transaction) []model.Transaction
 	GetAllTransactions(ctx context.Context) ([]model.Transaction, error)
 	EditTransactionStatus(ctx context.Context, timeStamp int64, status string) error
+	GetTransactionByID(ctx context.Context, timeStamp int64) (model.Transaction, error)
 }
 
 type TransactionRepository struct {
@@ -43,4 +44,13 @@ func (t *TransactionRepository) GetAllTransactions(ctx context.Context) ([]model
 		return nil, fmt.Errorf("%w: %v", errWrap.WrapError(errConstant.ErrEmptyData), "No transaction data available.")
 	}
 	return t.data, nil
+}
+
+func (t *TransactionRepository) GetTransactionByID(ctx context.Context, timeStamp int64) (model.Transaction, error) {
+	for i := range t.data {
+		if t.data[i].Timestamp == timeStamp {
+			return t.data[i], nil
+		}
+	}
+	return model.Transaction{}, fmt.Errorf("transaction with timestamp %d not found", timeStamp)
 }
