@@ -26,4 +26,5 @@ func (u *TransactionRoute) Run() {
 	group.GET("/issues", u.controller.GetTransaction().GetAllIssues)
 	group.GET("/detail/:timestamp", u.controller.GetTransaction().GetTransactionByID)
 	group.PUT("/edit/:timestamp/:status", u.controller.GetTransaction().EditTransactionStatus)
+	group.PUT("/edit/:timestamp", u.controller.GetTransaction().UpdateTransactionByID)
 }
