@@ -32,3 +32,8 @@ func (m *TransactionRepositoryMock) GetTransactionByID(ctx context.Context, time
 	args := m.Called(ctx)
 	return args.Get(0).(model.Transaction), args.Error(1)
 }
+
+func (m *TransactionRepositoryMock) UpdateTransactionByID(ctx context.Context, timeStamp int64, request model.Transaction) error {
+	args := m.Called(ctx)
+	return args.Error(1)
+}

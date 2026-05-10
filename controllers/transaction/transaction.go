@@ -6,6 +6,7 @@ import (
 	"go-transaction-service/common/response"
 	errConstant "go-transaction-service/constants/error"
 	"go-transaction-service/domain/dto"
+	"go-transaction-service/domain/model"
 	"go-transaction-service/services"
 	"net/http"
 
@@ -22,6 +23,7 @@ type ITransactionController interface {
 	GetAllIssues(ctx *gin.Context)
 	EditTransactionStatus(ctx *gin.Context)
 	GetTransactionByID(ctx *gin.Context)
+	UpdateTransactionByID(ctx *gin.Context)
 }
 
 func NewTransactionController(service services.IServiceRegistry) ITransactionController {
@@ -198,6 +200,48 @@ func (t *TransactionController) GetTransactionByID(ctx *gin.Context) {
 		Code:    http.StatusOK,
 		Message: &successMessage,
 		Data:    &transaction,
+		Gin:     ctx,
+	})
+}
+
+func (t *TransactionController) UpdateTransactionByID(ctx *gin.Context) {
+	timeStamp := ctx.Param("timestamp")
+
+	var request model.Transaction
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		errorMessage := fmt.Sprintf("invalid request body: %v", err)
+
+		response.HttpResponse(response.ParamHTTPResp{
+			Code:    http.StatusBadRequest,
+			Message: &errorMessage,
+			Err:     err,
+			Gin:     ctx,
+		})
+		return
+	}
+
+	err := t.service.GetTransaction().UpdateTransactionByID(
+		ctx.Request.Context(),
+		timeStamp,
+		request,
+	)
+	if err != nil {
+		errorMessage := fmt.Sprintf("%v", err)
+
+		response.HttpResponse(response.ParamHTTPResp{
+			Code:    http.StatusBadRequest,
+			Message: &errorMessage,
+			Err:     err,
+			Gin:     ctx,
+		})
+		return
+	}
+
+	successMessage := fmt.Sprintf("transaction with timestamp %s updated successfully", timeStamp)
+
+	response.HttpResponse(response.ParamHTTPResp{
+		Code:    http.StatusOK,
+		Message: &successMessage,
 		Gin:     ctx,
 	})
 }

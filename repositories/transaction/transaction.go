@@ -14,6 +14,7 @@ type ITransactionRepository interface {
 	GetAllTransactions(ctx context.Context) ([]model.Transaction, error)
 	EditTransactionStatus(ctx context.Context, timeStamp int64, status string) error
 	GetTransactionByID(ctx context.Context, timeStamp int64) (model.Transaction, error)
+	UpdateTransactionByID(ctx context.Context, timeStamp int64, request model.Transaction) error
 }
 
 type TransactionRepository struct {
@@ -53,4 +54,14 @@ func (t *TransactionRepository) GetTransactionByID(ctx context.Context, timeStam
 		}
 	}
 	return model.Transaction{}, fmt.Errorf("transaction with timestamp %d not found", timeStamp)
+}
+
+func (t *TransactionRepository) UpdateTransactionByID(ctx context.Context, timeStamp int64, request model.Transaction) error {
+	for i := range t.data {
+		if t.data[i].Timestamp == timeStamp {
+			t.data[i] = request
+			return nil
+		}
+	}
+	return fmt.Errorf("transaction with timestamp %d not found", timeStamp)
 }

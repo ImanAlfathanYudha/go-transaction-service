@@ -20,6 +20,7 @@ type ITransactionService interface {
 	GetAllIssues(ctx context.Context) ([]model.Transaction, error)
 	EditTransactionStatus(ctx context.Context, timeStamp string, status string) error
 	GetTransactionByID(ctx context.Context, timeStamp string) (model.Transaction, error)
+	UpdateTransactionByID(ctx context.Context, timeStamp string, request model.Transaction) error
 }
 
 type TransactionService struct {
@@ -147,6 +148,22 @@ func (t *TransactionService) UploadTransactionCSV(ctx context.Context, reader io
 
 	t.respository.GetTransaction().SaveTransactions(ctx, txns)
 	return nil, errorDetails
+}
+
+func (t *TransactionService) UpdateTransactionByID(ctx context.Context, timeStamp string, request model.Transaction) error {
+	if timeStamp == "" {
+		return fmt.Errorf("timestamp is empty")
+	}
+	timeStampInteger, err := strconv.ParseInt(timeStamp, 10, 64)
+	if err != nil {
+		return fmt.Errorf("timestamp is invalid")
+	}
+	err = request.Validate()
+	if err != nil {
+		return err
+	}
+
+	return t.respository.GetTransaction().UpdateTransactionByID(ctx, timeStampInteger, request)
 }
 
 func parseTransactionRecord(record []string) (model.Transaction, error) {
